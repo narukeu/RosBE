@@ -274,7 +274,9 @@ fi
 if rs_prepare_module "ninja"; then
 	# Python >= 3.13 removed the 'pipes' module, use 'shlex' as a drop-in replacement
 	if python -c "import sys; sys.exit(0 if sys.version_info >= (3,13) else 1)"; then
-		sed -i 's/^import pipes$/import shlex as pipes/' ../ninja/configure.py
+		if grep -q '^import pipes$' ../ninja/configure.py; then
+			sed -i 's/^import pipes$/import shlex as pipes/' ../ninja/configure.py
+		fi
 	fi
 	rs_do_command python ../ninja/configure.py --bootstrap
 	rs_do_command install ninja "$rs_prefixdir/bin"
